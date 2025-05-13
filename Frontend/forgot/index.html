@@ -618,7 +618,7 @@
                 <button type="submit" id="resetPasswordBtn" class="form-button" disabled>Reset Password</button>
             </form>
             <div class="links">
-                <a href="/login">Back to Login</a>
+                <a href="http://54.166.206.245:8006/">Back to Login</a>
             </div>
         </div>
 
@@ -696,7 +696,7 @@
             }
 
             try {
-                const response = await fetch('http://localhost:3000/check-email-data', {
+                const response = await fetch('http://54.166.206.245:3005/check-email-data', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
@@ -812,7 +812,7 @@
             const confirmNewPassword = document.getElementById('confirmNewPassword').value;
             
             try {
-                const response = await fetch('http://localhost:3000/reset-password-data', {
+                const response = await fetch('http://54.166.206.245:3005/reset-password-data', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, newPassword, confirmNewPassword })

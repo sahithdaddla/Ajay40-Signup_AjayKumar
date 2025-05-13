@@ -1,4 +1,3 @@
-
 const express = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
@@ -14,10 +13,10 @@ const app = express();
 // CORS middleware with specific origins
 app.use(cors({
   origin: [
-    process.env.FRONTEND_URL || 'http://54.166.206.245:3005', // Login page
-    
-    'http://localhost:5500', // Forgot password page
-    'http://127.0.0.1:5500' // Forgot password page (alternative IP)
+    'http://54.166.206.245:8005',
+    'http://54.166.206.245:8006',
+    'http://54.166.206.245:8007',
+    process.env.FRONTEND_URL || 'http://frontend:80'
   ]
 }));
 app.use(express.json());
@@ -36,7 +35,7 @@ const pool = new Pool({
 
 // Multer configuration for image upload
 const storage = multer.diskStorage({
-  destination: './uploads/',
+  destination: './Uploads/',
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
@@ -48,8 +47,8 @@ async function initializeDatabase() {
   try {
     const tableCheck = await pool.query(`
       SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_schema = 'public' 
+        SELECT FROM information_schema.tables
+        WHERE table_schema = 'public'
         AND table_name = 'users'
       );
     `);
@@ -119,7 +118,7 @@ app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'log
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'public', 'signup.html')));
 app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'forgot-password.html')));
 
-// Login - Endpoint: http://54.166.206.245:3005/login-data
+// Login - Endpoint: /login-data
 app.post('/login-data', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -162,7 +161,7 @@ app.post('/login-data', async (req, res) => {
   }
 });
 
-// Signup - Endpoint: http://54.166.206.245:3005/signup-data
+// Signup - Endpoint: /signup-data
 app.post('/signup-data', upload.single('profileImage'), async (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
@@ -207,7 +206,7 @@ app.post('/signup-data', upload.single('profileImage'), async (req, res) => {
   }
 });
 
-// Check email - Endpoint: http://54.166.206.245:3005/check-email-data
+// Check email - Endpoint: /check-email-data
 app.post('/check-email-data', async (req, res) => {
   try {
     const { email } = req.body;
@@ -243,7 +242,7 @@ app.post('/check-email-data', async (req, res) => {
   }
 });
 
-// Reset password - Endpoint: http://54.166.206.245:3005/reset-password-data
+// Reset password - Endpoint: /reset-password-data
 app.post('/reset-password-data', async (req, res) => {
   try {
     const { email, newPassword, confirmNewPassword } = req.body;
@@ -288,5 +287,3 @@ const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-
