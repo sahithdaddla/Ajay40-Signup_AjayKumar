@@ -14,7 +14,7 @@ const app = express();
 // CORS middleware with specific origins
 app.use(cors({
   origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000', // Login page
+    process.env.FRONTEND_URL || 'http://54.166.206.245:3005', // Login page
     
     'http://localhost:5500', // Forgot password page
     'http://127.0.0.1:5500' // Forgot password page (alternative IP)
@@ -28,9 +28,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'Uploads')));
 // PostgreSQL connection
 const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || 'postgres',
   database: process.env.DB_NAME || 'auth_db',
-  password: process.env.DB_PASSWORD || 'password@12345',
+  password: process.env.DB_PASSWORD || 'admin123',
   port: process.env.DB_PORT || 5432,
 });
 
@@ -119,7 +119,7 @@ app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'log
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'public', 'signup.html')));
 app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'public', 'forgot-password.html')));
 
-// Login - Endpoint: http://localhost:3000/login-data
+// Login - Endpoint: http://54.166.206.245:3005/login-data
 app.post('/login-data', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -162,7 +162,7 @@ app.post('/login-data', async (req, res) => {
   }
 });
 
-// Signup - Endpoint: http://localhost:3000/signup-data
+// Signup - Endpoint: http://54.166.206.245:3005/signup-data
 app.post('/signup-data', upload.single('profileImage'), async (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
@@ -207,7 +207,7 @@ app.post('/signup-data', upload.single('profileImage'), async (req, res) => {
   }
 });
 
-// Check email - Endpoint: http://localhost:3000/check-email-data
+// Check email - Endpoint: http://54.166.206.245:3005/check-email-data
 app.post('/check-email-data', async (req, res) => {
   try {
     const { email } = req.body;
@@ -243,7 +243,7 @@ app.post('/check-email-data', async (req, res) => {
   }
 });
 
-// Reset password - Endpoint: http://localhost:3000/reset-password-data
+// Reset password - Endpoint: http://54.166.206.245:3005/reset-password-data
 app.post('/reset-password-data', async (req, res) => {
   try {
     const { email, newPassword, confirmNewPassword } = req.body;
@@ -284,7 +284,7 @@ app.post('/reset-password-data', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
