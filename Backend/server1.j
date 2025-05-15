@@ -12,17 +12,18 @@ const fs = require('fs');
 if (fs.existsSync(path.join(__dirname, 'server.env'))) {
   dotenv.config({ path: path.join(__dirname, 'server.env') });
 } else {
-
-dotenv.config();
+  dotenv.config();
+}
 
 const app = express();
+app.use(cors());
 
 // Enhanced logging for environment variables
 console.log('Database Configuration:', {
   DB_USER: process.env.DB_USER,
   DB_HOST: process.env.DB_HOST,
   DB_NAME: process.env.DB_NAME,
-  DB_PASSWORD: '***', // Masked for security in logs
+  DB_PASSWORD: 'admin123', // Masked for security in logs
   DB_PORT: process.env.DB_PORT,
   FRONTEND_URL: process.env.FRONTEND_URL
 });
@@ -32,7 +33,7 @@ const allowedOrigins = [
   'http://54.166.206.245:8005',
   'http://54.166.206.245:8006',
   'http://54.166.206.245:8007',
-  process.env.FRONTEND_URL || 'http://localhost:3005'
+  process.env.FRONTEND_URL || 'http://54.166.206.245:3005'
 ];
 
 app.use(cors({
@@ -53,9 +54,9 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
   connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000,
-  retryDelay: 1000, // 1 second between retries
-  retryLimit: 10,   // Max 10 retries
-  });
+  retryDelay: 1000,
+  retryLimit: 10,
+});
 
 // Test connection immediately
 pool.query('SELECT NOW()')
@@ -126,22 +127,78 @@ connectWithRetry().catch(err => {
 app.get('/api/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
-    res.json({ 
+    res.json({
       status: 'healthy',
       database: 'connected',
       timestamp: new Date().toISOString()
     });
   } catch (err) {
-    res.status(503).json({ 
+    res.status(503).json({
       status: 'unhealthy',
       database: 'disconnected',
-      error: err.message 
+      error: err.message
     });
   }
 });
 
-// Routes remain the same as in your original file
-// [Include all your existing routes here...]
+// Example routes (replace with your actual routes)
+app.post('/api/signup', upload.single('profile_image'), async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const profileImage = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const result = await pool.query(
+      'INSERT INTO users (username, email, password, profile_image) VALUES ($1, $2, $3, $4) RETURNING id',
+      [username, email, hashedPassword, profileImage]
+    );
+
+    res.status(201).json({ message: 'User created', userId: result.rows[0].id });
+  } catch (err) {
+    console.error('Signup error:', err);
+    res.status(500).json({ error: 'Failed to create user' });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const user = result.rows[0];
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    res.json({ message: 'Login successful', userId: user.id });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
+
+app.post('/api/forgot', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Implement password reset logic (e.g., send email)
+    res.json({ message: 'Password reset link sent' });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ error: 'Failed to process request' });
+  }
+});
 
 const PORT = process.env.PORT || 3005;
 app.listen(PORT, () => {

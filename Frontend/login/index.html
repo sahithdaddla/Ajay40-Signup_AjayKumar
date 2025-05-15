@@ -540,7 +540,7 @@
             }
 
             try {
-                const response = await fetch('http//54.166.206.245:3005/login-data', {
+                const response = await fetch('http://54.166.206.245:3005/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })

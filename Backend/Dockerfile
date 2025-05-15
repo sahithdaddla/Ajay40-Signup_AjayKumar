@@ -5,6 +5,13 @@ WORKDIR /app
 # Install postgresql-client for wait script
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
+# Add environment variables here
+ENV DB_PORT=5434
+ENV DB_HOST=postgres
+ENV DB_USER=postgres
+ENV DB_NAME=auth_db
+ENV DB_PASSWORD=admin123
+
 # Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install --production
@@ -23,4 +30,4 @@ RUN chmod +x wait-for-postgres.sh
 EXPOSE 3005
 
 # Start the application with wait script
-CMD ["./wait-for-postgres.sh", "postgres", "5432", "node", "server.js"]
+CMD ["./wait-for-postgres.sh", "postgres", "5434", "node", "server.js"]

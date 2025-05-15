@@ -756,103 +756,63 @@
             updateSignupButton();
         }
 
-      // Validate email
-async function validateEmail() {
-    const email = emailInput.value;
-    const errorElement = document.getElementById('email-error');
-    const checkmark = document.getElementById('email-checkmark');
-    const cross = document.getElementById('email-cross');
-    
-    // Clear previous state
-    errorElement.textContent = '';
-    checkmark.style.display = 'none';
-    cross.style.display = 'none';
-    
-    // Email rules:
-    // - Alphanumeric with . _ -
-    // - No consecutive special characters
-    // - No spaces
-    // - Only gmail.com, outlook.com
-    const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(gmail\.com|outlook\.com)$/;
-    
-    if (!email) {
-        errorElement.textContent = 'Email is required';
-        errorElement.style.color = '#ff3333';
-        errorElement.style.fontWeight = 'bold';
-        cross.style.display = 'block';
-        isEmailValid = false;
-    } else if (email !== email.trim()) {
-        errorElement.textContent = 'No leading or trailing spaces allowed';
-        errorElement.style.color = '#ff3333';
-        errorElement.style.fontWeight = 'bold';
-        cross.style.display = 'block';
-        isEmailValid = false;
-    } else if (email.includes(' ')) {
-        errorElement.textContent = 'No spaces allowed';
-        errorElement.style.color = '#ff3333';
-        errorElement.style.fontWeight = 'bold';
-        cross.style.display = 'block';
-        isEmailValid = false;
-    } else if (/[._-]{2,}/.test(email)) {
-        errorElement.textContent = 'No consecutive dots, underscores, or hyphens';
-        errorElement.style.color = '#ff3333';
-        errorElement.style.fontWeight = 'bold';
-        cross.style.display = 'block';
-        isEmailValid = false;
-    } else if (!emailRegex.test(email)) {
-        errorElement.textContent = 'Only gmail.com or outlook.com domains allowed';
-        errorElement.style.color = '#ff3333';
-        errorElement.style.fontWeight = 'bold';
-        cross.style.display = 'block';
-        isEmailValid = false;
-    } else {
-        try {
-            // Show loading state while checking
-            errorElement.textContent = 'Checking email availability...';
-            errorElement.style.color = '#0077ff';
-            errorElement.style.fontWeight = 'normal';
+        // Validate email
+        function validateEmail() {
+            const email = emailInput.value;
+            const errorElement = document.getElementById('email-error');
+            const checkmark = document.getElementById('email-checkmark');
+            const cross = document.getElementById('email-cross');
             
-            const response = await fetch('http://54.166.206.245:3005/check-email-data', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            });
+            // Clear previous state
+            errorElement.textContent = '';
+            checkmark.style.display = 'none';
+            cross.style.display = 'none';
             
-            const data = await response.json();
+            // Email rules:
+            // - Alphanumeric with . _ -
+            // - No consecutive special characters
+            // - No spaces
+            // - Only gmail.com, outlook.com
+            const emailRegex = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@(gmail\.com|outlook\.com)$/;
             
-            if (data.exists) {
-                errorElement.textContent = 'Email already in use. Please use a different email.';
+            if (!email) {
+                errorElement.textContent = 'Email is required';
                 errorElement.style.color = '#ff3333';
                 errorElement.style.fontWeight = 'bold';
                 cross.style.display = 'block';
                 isEmailValid = false;
-                
-                // Also show the alert notification
-                showAlert('error', 'This email is already registered. Please use a different email or login.');
-                
-                // Highlight the email field
-                emailInput.style.borderBottomColor = '#ff3333';
-                setTimeout(() => {
-                    emailInput.style.borderBottomColor = '#0077ff';
-                }, 2000);
-            } else {
-                errorElement.textContent = 'Email is available';
-                errorElement.style.color = '#28a745';
+            } else if (email !== email.trim()) {
+                errorElement.textContent = 'No leading or trailing spaces allowed';
+                errorElement.style.color = '#ff3333';
                 errorElement.style.fontWeight = 'bold';
+                cross.style.display = 'block';
+                isEmailValid = false;
+            } else if (email.includes(' ')) {
+                errorElement.textContent = 'No spaces allowed';
+                errorElement.style.color = '#ff3333';
+                errorElement.style.fontWeight = 'bold';
+                cross.style.display = 'block';
+                isEmailValid = false;
+            } else if (/[._-]{2,}/.test(email)) {
+                errorElement.textContent = 'No consecutive dots, underscores, or hyphens';
+                errorElement.style.color = '#ff3333';
+                errorElement.style.fontWeight = 'bold';
+                cross.style.display = 'block';
+                isEmailValid = false;
+            } else if (!emailRegex.test(email)) {
+                errorElement.textContent = 'Only gmail.com or outlook.com domains allowed';
+                errorElement.style.color = '#ff3333';
+                errorElement.style.fontWeight = 'bold';
+                cross.style.display = 'block';
+                isEmailValid = false;
+            } else {
+                errorElement.textContent = '';
                 checkmark.style.display = 'block';
+                cross.style.display = 'none';
                 isEmailValid = true;
             }
-        } catch (err) {
-            errorElement.textContent = 'Error checking email availability';
-            errorElement.style.color = '#ff3333';
-            errorElement.style.fontWeight = 'bold';
-            cross.style.display = 'block';
-            isEmailValid = false;
-            showAlert('error', 'Error connecting to server. Please try again.');
+            updateSignupButton();
         }
-    }
-    updateSignupButton();
-}
 
         // Validate password
         function validatePassword() {
@@ -953,7 +913,7 @@ async function validateEmail() {
             
             // Validate all fields again before submission
             validateUsername();
-            await validateEmail();
+            validateEmail();
             validatePassword();
             validateConfirmPassword();
             
@@ -970,7 +930,7 @@ async function validateEmail() {
                 signupButton.disabled = true;
                 signupButton.textContent = 'Signing Up...';
                 
-                const response = await fetch('http://54.166.206.245:3005/api/signup', {
+                const response = await fetch('http://54.166.206.245:3005/signup-data', {
                     method: 'POST',
                     body: formData
                 });
@@ -979,7 +939,7 @@ async function validateEmail() {
                 if (data.message) {
                     showAlert('success', data.message);
                     setTimeout(() => {
-                        window.location.href = 'http://54.166.206.245:8006';
+                        window.location.href = '/login';
                     }, 3000);
                 } else {
                     document.getElementById('confirm-password-error').textContent = data.error || 'Signup failed';
