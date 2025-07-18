@@ -459,7 +459,7 @@
                 <button type="submit" class="login-button">Login</button>
             </form>
             <div class="links">
-                <a href="http://16.171.177.197:8007/">Sign Up</a> | <a href="http://16.171.177.197:8005">Forgot Password?</a>
+                <a href="http://13.49.66.30:8007/">Sign Up</a> | <a href="http://13.49.66.30:8005">Forgot Password?</a>
             </div>
         </div>
     </div>
@@ -540,7 +540,7 @@
             }
 
             try {
-                const response = await fetch('http://16.171.177.197:3005/api/login', {
+                const response = await fetch('http://13.49.66.30:3005/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
