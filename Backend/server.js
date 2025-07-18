@@ -30,10 +30,10 @@ console.log('Database Configuration:', {
 
 // CORS configuration
 const allowedOrigins = [
-  'http://13.49.66.30:8005',
-  'http://13.49.66.30:8006',
-  'http://13.49.66.30:8007',
-  process.env.FRONTEND_URL || 'http://13.49.66.30:8005'
+  'http://16.170.248.168:8005',
+  'http://16.170.248.168:8006',
+  'http://16.170.248.168:8007',
+  process.env.FRONTEND_URL || 'http://16.170.248.168:8005'
 ];
 
 app.use(cors({
